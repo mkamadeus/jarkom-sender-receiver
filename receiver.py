@@ -22,6 +22,8 @@ while True:
   if(data):
     sent = s.sendto(data, address)
     print(f'sent {len(data)} back to {address}')
+    s.close()
+    break
   # client, address = s.accept()
   # print(f'Got connection from {address}')
   # client.send('yey')
