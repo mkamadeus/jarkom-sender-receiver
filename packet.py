@@ -17,7 +17,7 @@ class Packet:
 
   def __repr__(self):
     full_packet = self.data_type
-    full_packet.extend(self.data_length).
+    full_packet.extend(self.data_length)
     full_packet.extend(self.seqnum)
     full_packet.extend(self.data)
     full_packet.extend(self.checksum)
