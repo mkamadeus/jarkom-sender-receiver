@@ -1,5 +1,7 @@
 import socket
 
+OUTFILE = "./out/downloaded"
+
 # Input port
 # port = int(input())
 port = 3000
@@ -22,6 +24,7 @@ while True:
   if(data):
     sent = s.sendto(data, address)
     print(f'sent {len(data)} back to {address}')
+
     s.close()
     break
   # client, address = s.accept()
@@ -29,3 +32,5 @@ while True:
   # client.send('yey')
   # client.close()
 
+with open(OUTFILE, 'w+') as f:
+  f.write(data.decode())

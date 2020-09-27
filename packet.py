@@ -15,6 +15,16 @@ class Packet:
     self.data = bytearray(data, 'utf-8') + (b'\0'*(32767 - len(data)))
     self.checksum = self.generate_checksum()
 
+  def __repr__(self):
+    full_packet = self.data_type
+    full_packet.extend(self.data_length).
+    full_packet.extend(self.seqnum)
+    full_packet.extend(self.data)
+    full_packet.extend(self.checksum)
+    # kalo return full_packet ada simbol-simbol aneh gitu wkwk
+    return full_packet.decode()
+    # return self.data.decode()
+
   def generate_checksum(self):
     content = self.data_type + self.data_length + self.seqnum + self.data
     checksum = bytearray('\0\0', 'utf-8')
@@ -49,3 +59,4 @@ print(int_to_bytes(3))
 p = Packet('i',int_to_bytes(len(message)),int_to_bytes(1), message)
 p.print_packet_info()
 p.print_packet_data()
+print(p)
