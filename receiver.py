@@ -1,7 +1,7 @@
 import socket
 from packet import Packet
 
-OUTFILE = "./out/downloaded"
+outfile = "/out/downloaded"
 
 # Input port
 # port = int(input())
@@ -35,6 +35,7 @@ while True:
       print("Checksum unmatched. ACK not sent.")
       
     if(p.packet_type == b'\x02'):
+      print("FIN packet found, stopping")
       break
 
 queue.sort()
@@ -42,7 +43,7 @@ content = b''
 for _,chunk in queue:
   content += chunk
 
-with open(OUTFILE, 'wb') as f:
+with open(outfile, 'wb') as f:
   f.write(content)
 
 s.close()
