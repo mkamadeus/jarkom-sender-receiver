@@ -38,7 +38,7 @@ while True:
       break
 
 queue.sort()
-content = ''
+content = b''
 for _,chunk in queue:
   content += chunk
 
