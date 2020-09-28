@@ -13,7 +13,7 @@ s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.bind(('localhost', port))
 print(f'socket binded to {port}')
 
-content = b''
+queue = []
 while True:
   data, address = s.recvfrom(32774)
   print(f'Received {len(data)} bytes from {address}')
@@ -23,8 +23,7 @@ while True:
 
     if (p.generate_checksum() == p.get_checksum()):
       print("Checksum matched. Sending ACK.")
-      print(len(content))
-      content += p.get_message()
+      queue.append((p.seq_num, p.get_message())) 
 
       # Create ACK packet
       ack = Packet(b'\x01' if p.packet_type != b'\x02' else b'\x03', p.get_seq_num(), b'')
@@ -38,7 +37,10 @@ while True:
     if(p.packet_type == b'\x02'):
       break
 
-
+queue.sort()
+content = ''
+for _,chunk in queue:
+  content += chunk
 
 with open(OUTFILE, 'wb') as f:
   f.write(content)
