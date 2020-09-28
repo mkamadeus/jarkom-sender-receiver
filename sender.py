@@ -1,7 +1,9 @@
 import socket
+from packet import Packet
+from utility import bytearray_to_binary, bytearray_to_int, int_to_bytes, bytes_to_binary, bytes_to_int
 
 # Input address receiver
-# pls
+address = input() 
 
 # Input port
 port = int(input())
@@ -22,12 +24,17 @@ data = ''
 while not data:
   try:
     print(f'sending')
-    sent = s.sendto(message, server_address)
+    p = Packet(b'\x00', 1, message)
+    p.print_packet_info()
+
+    sent = s.sendto(p.get_packet_content(), server_address)
 
     print(f'waiting to receive')
-    data, server = s.recvfrom(4096)
+    data, server = s.recvfrom(32774)
 
-    print(f'received {data}')
+    p = Packet(byte_data=data)
+    if(p.packet_type == b'\x01'):
+      print(f'received ACK')
 
   except socket.timeout:
     print(f'time out!')

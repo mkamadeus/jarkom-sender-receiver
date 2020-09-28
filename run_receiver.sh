@@ -5,4 +5,4 @@
 # Contoh: echo "$1" | python3 receiver.py 
 
 # echo "Receiver"
-echo "$1" | python3 receiver.py
+echo "$1" | python receiver.py

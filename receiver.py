@@ -1,4 +1,5 @@
 import socket
+from packet import Packet
 
 OUTFILE = "./out/downloaded"
 
@@ -12,25 +13,24 @@ s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.bind(('localhost', port))
 print(f'socket binded to {port}')
 
-# s.listen(5)
-# print('socket listening')
-
-
 while True:
-  data, address = s.recvfrom(4096)
+  data, address = s.recvfrom(32774)
   print(f'Received {len(data)} bytes from {address}')
-  print(data)
-
+  
   if(data):
-    sent = s.sendto(data, address)
+    p = Packet(byte_data=data)
+    p.print_packet_info()
+
+    # Create ACK packet
+    ack = Packet(b'\x01', p.get_seq_num(), b'')
+
+    sent = s.sendto(ack.get_packet_content(), address)
     print(f'sent {len(data)} back to {address}')
 
-    s.close()
-    break
+    with open(OUTFILE, 'wb') as f:
+      f.write(p.get_message())
   # client, address = s.accept()
   # print(f'Got connection from {address}')
+s.close()
   # client.send('yey')
   # client.close()
-
-with open(OUTFILE, 'w+') as f:
-  f.write(data.decode())
