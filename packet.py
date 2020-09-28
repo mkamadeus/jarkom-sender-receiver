@@ -30,7 +30,7 @@ class Packet:
 
     self.packet_type = struct.pack('s', packet_type)
     self.data_length = struct.pack('2s', len(data).to_bytes(2, 'little'))
-    self.seq_num = struct.pack('2s', bytes([seq_num]))
+    self.seq_num = struct.pack('2s', seq_num.to_bytes(2, 'little'))
     self.data = struct.pack(f'{len(data)}s', data)
     self.checksum = struct.pack('2s', self.generate_checksum())
 
@@ -59,6 +59,9 @@ class Packet:
 
   def get_message(self):
     return struct.unpack(f'{self.get_data_length()}s' ,self.data)[0]
+
+  def get_checksum(self):
+    return self.checksum
   
   def get_packet_content(self):
     return self.packet_content
