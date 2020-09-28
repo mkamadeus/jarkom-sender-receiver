@@ -34,6 +34,7 @@ while True:
 
     else:
       print("Checksum unmatched. ACK not sent.")
+      
     if(p.packet_type == b'\x02'):
       break
 
