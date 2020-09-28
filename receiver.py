@@ -21,16 +21,19 @@ while True:
   if(data):
     p = Packet(byte_data=data)
 
-    print(len(content))
-    content += p.get_message()
+    if (p.generate_checksum() == p.get_checksum()):
+      print("Checksum matched. Sending ACK.")
+      print(len(content))
+      content += p.get_message()
 
-    # Create ACK packet
-    ack = Packet(b'\x01' if p.packet_type != b'\x02' else b'\x03', p.get_seq_num(), b'')
+      # Create ACK packet
+      ack = Packet(b'\x01' if p.packet_type != b'\x02' else b'\x03', p.get_seq_num(), b'')
 
-    sent = s.sendto(ack.get_packet_content(), address)
-    print(f'Sent {len(data)} back to {address}')
+      sent = s.sendto(ack.get_packet_content(), address)
+      print(f'Sent {len(data)} back to {address}')
 
-
+    else:
+      print("Checksum unmatched. ACK not sent.")
     if(p.packet_type == b'\x02'):
       break
 
