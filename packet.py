@@ -1,62 +1,47 @@
 import math
-from utility import bytearray_to_binary, bytearray_to_int, int_to_bytes
+import struct
+from utility import bytearray_to_binary, bytearray_to_int, int_to_bytes, bytes_to_binary, bytes_to_int
 
 class Packet:
 
   # Type = 8 bit = 1 bytes
   # Length = 16 bit = 2 bytes (unsigned integer)
-  # Seqnum = 16 bit = 2 bytes
+  # Sequence Number = 16 bit = 2 bytes
   # Checksum = 16 bit = 2 bytes
   # Data = 32767 bytes (2^15-1)
-  def __init__(self, data_type, data_length, seqnum, data):
-    self.data_type = bytearray(data_type, 'utf-8')
-    self.data_length = bytearray(data_length)
-    self.seqnum = bytearray(seqnum)
-    self.data = bytearray(data, 'utf-8') + (b'\0'*(32767 - len(data)))
-    self.checksum = self.generate_checksum()
-
-  def __repr__(self):
-    full_packet = self.data_type
-    full_packet.extend(self.data_length).
-    full_packet.extend(self.seqnum)
-    full_packet.extend(self.data)
-    full_packet.extend(self.checksum)
-    # kalo return full_packet ada simbol-simbol aneh gitu wkwk
-    return full_packet.decode()
-    # return self.data.decode()
+  def __init__(self, data_type, data_length, seq_num, data):
+    self.data_type = struct.pack('s', data_type)
+    self.data_length = struct.pack('2s', data_length)
+    self.seq_num = struct.pack('2s', seq_num)
+    self.data = struct.pack('32767s', data)
+    self.checksum = struct.pack('2s', self.generate_checksum())
 
   def generate_checksum(self):
-    content = self.data_type + self.data_length + self.seqnum + self.data
-    checksum = bytearray('\0\0', 'utf-8')
+    content = bytearray(self.data_type + self.data_length + self.seq_num + self.data)
+    checksum = bytearray(b'\0\0')
     for i in range(0, math.ceil((5 + self.get_data_length())/2)):
-      # print(bytearray_to_binary(checksum))
-      # print(bytearray_to_binary(content[2*i:2*i+2]))
-      # print('----------')
       checksum[0] ^= content[2*i]
       checksum[1] ^= content[2*i+1]
-      # print(bytearray_to_binary(checksum))
-      # print()
 
-    return checksum
+    return bytes(checksum)
 
+  # GETTERS
   def get_data_length(self):
-    return bytearray_to_int(self.data_length)
+    return struct.unpack('h', self.data_length)[0]
 
+  def get_data_type(self):
+    return struct.unpack('b', self.data_type)[0]
+  
+  def get_seq_num(self):
+    return struct.unpack('h', self.seq_num)[0]
+  
+  def get_packet_content(self):
+    return self.data_type + self.data_length + self.seq_num + self.data
+
+  # OUTPUT  
   def print_packet_info(self):
-    print(f'type = {bytearray_to_binary(self.data_type)} ({self.data_type.decode()})')
-    print(f'length = {bytearray_to_binary(self.data_length)} ({self.data_length.decode()})')
-    print(f'seqnum = {bytearray_to_binary(self.seqnum)} ({self.seqnum.decode()})')
-    print(f'checksum = {bytearray_to_binary(self.checksum)}')
-    print(f'data = {bytearray_to_binary(self.data[0:self.get_data_length()])} ({self.data[0:self.get_data_length()].decode()})')
-
-  def print_packet_data(self):  
-    print(f'{bytearray_to_binary(self.data_type)} {bytearray_to_binary(self.data_length)} {bytearray_to_binary(self.seqnum)} {bytearray_to_binary(self.checksum)} {bytearray_to_binary(self.data[0:self.get_data_length()])}')
-
-
-
-message = 'Lorem ipsum dolor sit amet'
-print(int_to_bytes(3))
-p = Packet('i',int_to_bytes(len(message)),int_to_bytes(1), message)
-p.print_packet_info()
-p.print_packet_data()
-print(p)
+    print(f'type = {self.data_type} ({self.get_data_type()})')
+    print(f'length = {self.data_length} ({self.get_data_length()})')
+    print(f'seq_num = {self.seq_num} ({self.get_seq_num()})')
+    print(f'checksum = {self.checksum}')
+    print(f'data = {self.data[0:self.get_data_length()]}')
