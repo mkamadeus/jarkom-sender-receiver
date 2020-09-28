@@ -29,7 +29,7 @@ class Packet:
       raise Exception('Packet contents too long')
 
     self.packet_type = struct.pack('s', packet_type)
-    self.data_length = struct.pack('2s', bytes([len(data)]))
+    self.data_length = struct.pack('2s', len(data).to_bytes(2, 'little'))
     self.seq_num = struct.pack('2s', bytes([seq_num]))
     self.data = struct.pack(f'{len(data)}s', data)
     self.checksum = struct.pack('2s', self.generate_checksum())
