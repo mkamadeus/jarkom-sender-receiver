@@ -1,41 +1,47 @@
 import socket
 from packet import Packet
+import logging
+# import time
+# import random
 
-outfile = "/out/downloaded"
+logging.basicConfig(format='%(asctime)s %(message)s', datefmt='[%H:%M:%S]', level=logging.INFO)
+
+outfile = "./out/downloaded"
 
 # Input port
-# port = int(input())
 port = int(input())
 
 # Create UDP based socket (using Datagram Sockets)
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-s.bind(('localhost', port))
-print(f'socket binded to {port}')
+server_address =(socket.gethostbyname(socket.gethostname()), port)
+
+s.bind(server_address)
+logging.info(f'Socket binded to {server_address}')
 
 queue = []
 while True:
   data, address = s.recvfrom(32774)
-  print(f'Received {len(data)} bytes from {address}')
+  logging.info(f'Received {len(data)} bytes from {address}')
   
   if(data):
     p = Packet(byte_data=data)
 
     if (p.generate_checksum() == p.get_checksum()):
-      print("Checksum matched. Sending ACK.")
+      logging.info("Checksum matched")
       queue.append((p.seq_num, p.get_message())) 
 
       # Create ACK packet
       ack = Packet(b'\x01' if p.packet_type != b'\x02' else b'\x03', p.get_seq_num(), b'')
-
+      # time.sleep(random.random()*6)
       sent = s.sendto(ack.get_packet_content(), address)
-      print(f'Sent {len(data)} back to {address}')
+      logging.info(f'Sent ACK to {address}')
 
     else:
-      print("Checksum unmatched. ACK not sent.")
+      logging.info("Checksum mismatch, ACK not sent")
       
     if(p.packet_type == b'\x02'):
-      print("FIN packet found, stopping")
+      logging.info("FIN packet found, stopping")
       break
 
 queue.sort()
