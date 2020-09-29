@@ -42,7 +42,7 @@ while True:
   if(data):
     p = Packet(byte_data=data)
 
-    if(p.get_seq_num() > last_seq_num):
+    if(p.get_seq_num() == last_seq_num + 1):
       logging.info(f'Writing data from packet {last_seq_num} ({len(last_data)})')
       with open(outfile, 'ab') as f:
         f.write(last_data)
