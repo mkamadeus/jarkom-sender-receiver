@@ -55,7 +55,7 @@ while True:
       logging.info(f'Checksum matched for packet {p.get_seq_num()}')
 
       # Delay for testing
-      time.sleep(random.random()*10)
+      # time.sleep(random.random()*10)
 
       if(p.packet_type == b'\x02'):
         # Create FIN-ACK packet
