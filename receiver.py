@@ -26,7 +26,14 @@ last_data = b''
 open(outfile, 'w').close()
 
 while True:
-  data, address = s.recvfrom(32774)
+  try:
+    data, address = s.recvfrom(32774)
+  except:
+    # Sender closed
+    with open(outfile, 'ab') as f:
+      f.write(last_data)
+    break
+
   logging.info(f'Received {len(data)} bytes from {address}')
   
   if(data):

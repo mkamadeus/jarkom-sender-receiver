@@ -60,7 +60,7 @@ for server_address in server_addresses:
           p = Packet(byte_data=data)
 
           # If received packet is ACK (\x01)
-          if(p.packet_type == b'\x01'):
+          if(p.packet_type == b'\x01' and p.get_seq_num() == seq_num):
             logging.info(f'Received ACK')
             seq_num += 1
 
@@ -68,5 +68,8 @@ for server_address in server_addresses:
       except socket.timeout:
         # If ACK not received (packet loss, ack loss)
         logging.info(f'Time out!')
+      except:
+        logging.info(f'Time out!')
 
-s.close()
+
+# s.close()
