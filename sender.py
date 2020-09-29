@@ -34,7 +34,7 @@ for server_address in server_addresses:
       try:
         # If already last chunk
         if(len(chunks)-1 == seq_num):
-          logging.info(f'Sending packet {seq_num} (FIN)')
+          logging.info(f'Sending packet {seq_num} (FIN) ({len(chunks[seq_num])})')
           # Send file segment
           p = Packet(b'\x00' if len(chunks)-1 != seq_num else b'\x02', seq_num, chunks[seq_num])
           sent = s.sendto(p.get_packet_content(), server_address)
@@ -49,7 +49,7 @@ for server_address in server_addresses:
             logging.info(f'Received FIN-ACK')
             received_fin_ack = True
         else:
-          logging.info(f'Sending packet {seq_num}')
+          logging.info(f'Sending packet {seq_num} ({len(chunks[seq_num])})')
           # Send file segment
           p = Packet(b'\x00', seq_num, chunks[seq_num])
           sent = s.sendto(p.get_packet_content(), server_address)

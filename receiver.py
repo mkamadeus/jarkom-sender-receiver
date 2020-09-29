@@ -25,13 +25,16 @@ last_data = b''
 # Reset file
 open(outfile, 'w').close()
 
+fin = False
 while True:
+  logging.info(f'Waiting to receive data')
   try:
     data, address = s.recvfrom(32774)
   except:
-    # Sender closed
-    with open(outfile, 'ab') as f:
-      f.write(last_data)
+    # # Sender closed
+    # logging.info(f'Writing data from packet {last_seq_num}')
+    # with open(outfile, 'ab') as f:
+    #   f.write(last_data)
     break
 
   logging.info(f'Received {len(data)} bytes from {address}')
@@ -40,12 +43,11 @@ while True:
     p = Packet(byte_data=data)
 
     if(p.get_seq_num() > last_seq_num):
-      logging.info(f'Writing data from packet {last_seq_num}')
-      last_seq_num = p.get_seq_num()
-
+      logging.info(f'Writing data from packet {last_seq_num} ({len(last_data)})')
       with open(outfile, 'ab') as f:
         f.write(last_data)
 
+      last_seq_num = p.get_seq_num()
       last_data = p.get_message()
     
 
@@ -53,15 +55,18 @@ while True:
       logging.info(f'Checksum matched for packet {p.get_seq_num()}')
 
       # Delay for testing
-      # time.sleep(random.random()*10)
+      time.sleep(random.random()*10)
 
       if(p.packet_type == b'\x02'):
         # Create FIN-ACK packet
         ack = Packet(b'\x03', p.get_seq_num(), b'')
         sent = s.sendto(ack.get_packet_content(), address)
         logging.info(f'Sent FIN-ACK to {address}')
-      # with open(outfile, 'r+b') as f:
-      #   f.write(last_data)
+        if(not fin):
+          logging.info(f'Writing data from packet {last_seq_num} ({len(last_data)})')
+          with open(outfile, 'ab') as f:
+            f.write(last_data)
+          fin=True
       else:
         # Create ACK packet
         ack = Packet(b'\x01', p.get_seq_num(), b'')
