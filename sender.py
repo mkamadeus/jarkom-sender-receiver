@@ -22,7 +22,7 @@ chunks = [message[i:i+32767] for i in range(0, len(message), 32767)]
 # Create UDP based socket (using Datagram Sockets)
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.settimeout(5)
-server_addresses =[(socket.gethostbyname(add), port) for add in address.split()]
+server_addresses =[(socket.gethostbyname(add), port) for add in address.split(',')]
 
 # For each chunk...
 for server_address in server_addresses:
