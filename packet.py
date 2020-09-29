@@ -41,7 +41,7 @@ class Packet:
     if(len(content) % 2 != 0):
       content += b'\x00'
     checksum = bytearray(b'\0\0')
-    for i in range(0, math.ceil((5 + self.get_data_length())/2)):
+    for i in range(0, math.ceil((len(content))/2)):
       checksum[0] ^= content[2*i]
       checksum[1] ^= content[2*i+1]
 

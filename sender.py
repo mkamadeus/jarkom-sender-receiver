@@ -36,7 +36,7 @@ for server_address in server_addresses:
         if(len(chunks)-1 == seq_num):
           logging.info(f'Sending packet {seq_num} (FIN) ({len(chunks[seq_num])})')
           # Send file segment
-          p = Packet(b'\x00' if len(chunks)-1 != seq_num else b'\x02', seq_num, chunks[seq_num])
+          p = Packet(b'\x02', seq_num, chunks[seq_num])
           sent = s.sendto(p.get_packet_content(), server_address)
 
           # Wait to receive FIN-ACK Packet
