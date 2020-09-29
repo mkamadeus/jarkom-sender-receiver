@@ -25,9 +25,9 @@ s.settimeout(5)
 server_addresses =[(socket.gethostbyname(add), port) for add in address.split(',')]
 
 # For each chunk...
-seq_num = 0
 for server_address in server_addresses:
   received_fin_ack = False
+  seq_num = 0
   while(not received_fin_ack):
     data = None
     while data is None:
@@ -45,7 +45,7 @@ for server_address in server_addresses:
           p = Packet(byte_data=data)
 
           # If received FIN-ACK
-          if(p.packet_type == b'\x03'):
+          if(p.packet_type == b'\x03' and p.get_seq_num() == seq_num):
             logging.info(f'Received FIN-ACK')
             received_fin_ack = True
         else:
