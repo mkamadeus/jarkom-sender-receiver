@@ -20,9 +20,8 @@ s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.settimeout(5)
 server_addresses =[(socket.gethostbyname(add), port) for add in address.split(',')]
 
-filesize = os.stat(filename).st_size
-
 for server_address in server_addresses:
+  filesize = os.stat(filename).st_size
   seq_num = 0
   received_fin_ack = False
   send_fin_count = 0
