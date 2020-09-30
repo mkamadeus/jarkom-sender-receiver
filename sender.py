@@ -54,7 +54,7 @@ for server_address in server_addresses:
               logging.info(f'Received FIN-ACK')
               received_fin_ack = True
             # or if FIN-ACK can be assumed lost
-            else if (send_fin_count > 10):
+            elif (send_fin_count > 10):
               logging.info(f'Final timeout: sender will quit')
               logging.info(f'Assuming FIN has been received, FIN-ACK lost')
               received_fin_ack = True
