@@ -44,6 +44,13 @@ for server_address in server_addresses:
             sent = s.sendto(p.get_packet_content(), server_address)
             send_fin_count += 1
 
+            # FIN-ACK can be assumed lost
+            if (send_fin_count > 12):
+              logging.info(f'Final timeout: sender will quit')
+              logging.info(f'Assuming FIN has been received & FIN-ACK is lost')
+              received_fin_ack = True
+              break
+
             # Wait to receive FIN-ACK Packet
             logging.info(f'Waiting to receive FIN-ACK')
             data, server = s.recvfrom(32774)
@@ -52,11 +59,6 @@ for server_address in server_addresses:
             # If received FIN-ACK
             if(p.packet_type == b'\x03' and p.get_seq_num() == seq_num):
               logging.info(f'Received FIN-ACK')
-              received_fin_ack = True
-            # or if FIN-ACK can be assumed lost
-            elif (send_fin_count > 10):
-              logging.info(f'Final timeout: sender will quit')
-              logging.info(f'Assuming FIN has been received, FIN-ACK lost')
               received_fin_ack = True
 
           else:
