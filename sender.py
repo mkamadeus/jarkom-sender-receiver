@@ -25,6 +25,7 @@ filesize = os.stat(filename).st_size
 for server_address in server_addresses:
   seq_num = 0
   received_fin_ack = False
+  send_fin_count = 0
 
   with open(filename, 'rb') as f:
     while not received_fin_ack:
@@ -41,6 +42,7 @@ for server_address in server_addresses:
             # Send file segment
             p = Packet(b'\x02', seq_num, chunks)
             sent = s.sendto(p.get_packet_content(), server_address)
+            send_fin_count += 1
 
             # Wait to receive FIN-ACK Packet
             logging.info(f'Waiting to receive FIN-ACK')
@@ -50,6 +52,11 @@ for server_address in server_addresses:
             # If received FIN-ACK
             if(p.packet_type == b'\x03' and p.get_seq_num() == seq_num):
               logging.info(f'Received FIN-ACK')
+              received_fin_ack = True
+            # or if FIN-ACK can be assumed lost
+            else if (send_fin_count > 10):
+              logging.info(f'Final timeout: sender will quit')
+              logging.info(f'Assuming FIN has been received, FIN-ACK lost')
               received_fin_ack = True
 
           else:
