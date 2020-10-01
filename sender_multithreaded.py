@@ -74,7 +74,7 @@ for server_address in server_addresses:
     while True:
         try:
             logging.info(f'Sending {len(chunks)-1}')
-            p = Packet(b'\x02', len(chunks)-1, message)
+            p = Packet(b'\x02', len(chunks)-1, chunks[len(chunks)-1])
             s.sendto(p.get_packet_content(), server_address)
 
             logging.info(f'Waiting')
